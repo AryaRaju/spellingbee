@@ -1,0 +1,110 @@
+/* eslint-disable  func-names */
+/* eslint quote-props: ["error", "consistent"]*/
+/**
+ * This sample demonstrates a simple skill built with the Amazon Alexa Skills
+ * nodejs skill development kit.
+ * This sample supports multiple lauguages. (en-US, en-GB, de-DE).
+ * The Intent Schema, Custom Slots and Sample Utterances for this skill, as well
+ * as testing instructions are located at https://github.com/alexa/skill-sample-nodejs-fact
+ **/
+
+'use strict';
+const Alexa = require('alexa-sdk');
+
+//=========================================================================================================================================
+//TODO: The items below this comment need your attention.
+//=========================================================================================================================================
+
+//Replace with your app ID (OPTIONAL).  You can find this value at the top of your skill's page on http://developer.amazon.com.
+//Make sure to enclose your value in quotes, like this: const APP_ID = 'amzn1.ask.skill.bb4045e6-b3e8-4133-b650-72923c5980f1';
+const APP_ID = 'amzn1.ask.skill.16df45f4-6960-4e74-a4b5-127e11dfcb0a';
+
+const SKILL_NAME = 'Space Facts';
+const GET_FACT_MESSAGE = "Here's your fact: ";
+const HELP_MESSAGE = 'You can say tell me a space fact, or, you can say exit... What can I help you with?';
+const HELP_REPROMPT = 'What can I help you with?';
+const STOP_MESSAGE = 'Goodbye!';
+const ERROR_MESSAGE = 'Sorry I didnt get you!';
+
+//=========================================================================================================================================
+//TODO: Replace this data with your own.  You can find translations of this data at http://github.com/alexa/skill-sample-node-js-fact/data
+//=========================================================================================================================================
+const data = [
+    'spell the word cat',
+    'spell the word dog',
+    'spell the word plant',
+    'spell the word tree',
+    'spell the word leaf',
+    'spell the word apple',
+    'spell the word orange',
+    'spell the word tiger',
+    'spell the word bird',
+    'spell the word lion',
+];
+
+const answer = [
+    'cat',
+    'dog',
+    'plant',
+    'tree',
+    'leaf',
+    'apple',
+    'orange',
+    'tiger',
+    'bird',
+    'lion',
+];
+
+//=========================================================================================================================================
+//Editing anything below this line might break your skill.
+//=========================================================================================================================================
+var qno=0;
+const handlers = {
+    'LaunchRequest': function() {
+   const speech = "Spelling bee competition conducted by tata consultancy service. Our project  manger Alisha . Project developers are Arya Raju and  Arya Shaji . A spelling bee is a competition in which contestants are asked to spell a broad selection of words, usually with a varying degree of difficulty. Gather participants. For a truly competitive oral spelling bee, you'll want to select about eight to 10 participants, though more or fewer is fine .  Tips . Read clearly and spell carefully , Move things along , Reinforce,Repeat until you have your winner";
+   const reprompt = "can i start the quiz?";
+   this.emit(':ask', speech, reprompt);
+},
+    'GetNewFactIntent': function () {
+        this.response.speak("you have launched the skill spellingbee").withShouldEndSession(false);
+    },
+    'AMAZON.HelpIntent': function () {
+        const speechOutput = HELP_MESSAGE;
+        const reprompt = HELP_REPROMPT;
+        this.response.speak(speechOutput).listen(reprompt);
+        this.emit(':responseReady');
+    },
+    'AMAZON.CancelIntent': function () {
+        this.response.speak(STOP_MESSAGE);
+        this.emit(':responseReady');
+    },
+    'AMAZON.StopIntent': function () {
+        this.response.speak(STOP_MESSAGE);
+        this.emit(':responseReady');
+    },
+     'AMAZON.FallbackIntent': function () {
+       this.emit(':ask',ERROR_MESSAGE,"say ask for next question");
+    },
+    'answer': function () {
+        const word = this.event.request.intent.slots.myanswer.value.toLowerCase();
+         //this.emit(':ask',word+'  '+answer[qno],"say ask for next question"); 
+        if(word===answer[qno]){
+        this.emit(':ask',"Your Answer is correct","say ask for next question");    
+        }
+        else{
+            this.emit(':ask',"Your Answer is Wrong","say ask for next question");
+        }
+    },
+     'question': function () {
+         qno=Math.floor(Math.random() * data.length);
+        this.emit(':ask',data[qno],"tell me your answer");
+    },
+    
+};
+
+exports.handler = function (event, context, callback) {
+    const alexa = Alexa.handler(event, context, callback);
+    alexa.APP_ID = APP_ID;
+    alexa.registerHandlers(handlers);
+    alexa.execute();
+};
